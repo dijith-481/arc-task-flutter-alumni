@@ -42,64 +42,72 @@ class _AlumniListPageState extends State<AlumniListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Stack(
+        // --- START OF FIX ---
+        // We replace the Stack with a Column to control the layout vertically.
+        child: Column(
           children: [
-            FutureBuilder<List<Alumni>>(
-              future: _alumniFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('An error occurred: ${snapshot.error}'),
-                  );
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No alumni found.'));
-                }
+            // This Expanded widget tells the FutureBuilder (and its ListView)
+            // to take up all the available vertical space ABOVE the search bar.
+            Expanded(
+              child: FutureBuilder<List<Alumni>>(
+                future: _alumniFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text('An error occurred: ${snapshot.error}'),
+                    );
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No alumni found.'));
+                  }
 
-                final list = _filteredBranchAlumni;
-                return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 150),
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    final alumni = list[index];
-                    return TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0.0, end: 1.0),
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeOut,
-                      builder: (context, value, child) {
-                        return Transform.translate(
-                          offset: Offset(0, 40 * (1 - value)),
-                          child: Opacity(opacity: value, child: child!),
-                        );
-                      },
-                      child: AlumniCard(
-                        alumni: alumni,
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) =>
-                                AlumniProfilePage(alumni: alumni),
+                  final list = _filteredBranchAlumni;
+                  return ListView.builder(
+                    // reverse: true now works as expected within this defined space.
+                    reverse: true,
+                    // We add top padding to prevent the last item from being hidden
+                    // by the status bar when scrolling to the very end.
+                    padding: const EdgeInsets.only(top: 16),
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      final alumni = list[index];
+                      return TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeOut,
+                        builder: (context, value, child) {
+                          return Transform.translate(
+                            offset: Offset(0, 40 * (1 - value)),
+                            child: Opacity(opacity: value, child: child!),
                           );
                         },
-                      ),
-                    );
-                  },
-                );
-              },
+                        child: AlumniCard(
+                          alumni: alumni,
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) =>
+                                  AlumniProfilePage(alumni: alumni),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _buildBottomSearchAndFilter(context),
-            ),
+            // The search bar is now the second item in the Column,
+            // neatly placed at the bottom.
+            _buildBottomSearchAndFilter(context),
           ],
         ),
+        // --- END OF FIX ---
       ),
     );
   }

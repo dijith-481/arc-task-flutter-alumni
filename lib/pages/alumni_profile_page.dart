@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/alumni.dart';
@@ -20,7 +19,7 @@ class _AlumniProfilePageState extends State<AlumniProfilePage> {
   @override
   void initState() {
     super.initState();
-    _detailsFuture = _firestoreService.getAlumniDetails(widget.alumni.name);
+    _detailsFuture = _firestoreService.getAlumniDetails(widget.alumni.id);
   }
 
   IconData _getSocialIcon(String key) {

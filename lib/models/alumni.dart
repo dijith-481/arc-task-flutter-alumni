@@ -1,4 +1,5 @@
 class Alumni {
+  final String id;
   final String name;
   final String batch;
   final String branch;
@@ -8,6 +9,7 @@ class Alumni {
   final String? linkedinUrl;
 
   const Alumni({
+    required this.id,
     required this.name,
     required this.batch,
     required this.branch,
@@ -17,9 +19,9 @@ class Alumni {
     this.linkedinUrl,
   });
 
-  // Add this factory constructor
-  factory Alumni.fromFirestore(Map<String, dynamic> data) {
+  factory Alumni.fromFirestore(Map<String, dynamic> data, String id) {
     return Alumni(
+      id: id,
       name: data['name'] ?? '',
       batch: data['batch'] ?? '',
       branch: data['branch'] ?? '',
