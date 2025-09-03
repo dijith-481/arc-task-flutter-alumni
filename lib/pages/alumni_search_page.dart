@@ -6,7 +6,7 @@ import '../models/alumni.dart';
 import '../widgets/alumni_card.dart';
 import 'alumni_profile_page.dart';
 
-enum SearchFilter { all, name, branch, company, role }
+enum SearchFilter { all, name, branch, company, role, batch }
 
 class AlumniSearchPage extends StatefulWidget {
   final List<Alumni> allAlumni;
@@ -43,8 +43,9 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     final keysToSearch = <WeightedKey<Alumni>>[];
     if (_currentFilter == SearchFilter.all) {
       keysToSearch.addAll([
-        WeightedKey<Alumni>(name: 'name', weight: 0.5, getter: (a) => a.name),
+        WeightedKey<Alumni>(name: 'name', weight: 0.4, getter: (a) => a.name),
         WeightedKey<Alumni>(name: 'role', weight: 0.2, getter: (a) => a.role),
+        WeightedKey<Alumni>(name: 'batch', weight: 0.1, getter: (a) => a.batch),
         WeightedKey<Alumni>(
           name: 'company',
           weight: 0.2,
@@ -71,6 +72,8 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
                 return a.company;
               case SearchFilter.role:
                 return a.role;
+              case SearchFilter.batch:
+                return a.batch;
               default:
                 return a.name;
             }
@@ -80,7 +83,7 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     }
     final searcher = Fuzzy<Alumni>(
       widget.allAlumni,
-      
+
       options: FuzzyOptions(keys: keysToSearch, threshold: 0.5),
     );
     setState(() {
@@ -88,13 +91,11 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     });
   }
 
-  
   List<int> getManualMatches(String text, String query) {
     final List<int> indices = [];
     final lowerText = text.toLowerCase();
     final lowerQuery = query.toLowerCase();
 
-    
     final queryChars = lowerQuery.replaceAll(' ', '').split('').toSet();
 
     for (int i = 0; i < lowerText.length; i++) {
@@ -110,7 +111,7 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     return Scaffold(
       backgroundColor: Colors.black12,
       body: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+        filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
         child: Column(
           children: [
             const SizedBox(height: kToolbarHeight),
@@ -122,12 +123,28 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
                   final alumni = result.item;
                   final query = _controller.text;
 
+                  List<int> nameMatches = [];
+                  List<int> roleMatches = [];
+                  List<int> companyMatches = [];
+                  if (_currentFilter == SearchFilter.all ||
+                      _currentFilter == SearchFilter.name) {
+                    nameMatches = getManualMatches(alumni.name, query);
+                  }
+                  if (_currentFilter == SearchFilter.all ||
+                      _currentFilter == SearchFilter.role) {
+                    roleMatches = getManualMatches(alumni.role, query);
+                  }
+                  if (_currentFilter == SearchFilter.all ||
+                      _currentFilter == SearchFilter.company) {
+                    companyMatches = getManualMatches(alumni.company, query);
+                  }
+
                   return AlumniCard(
                     alumni: alumni,
-                    
-                    nameMatches: getManualMatches(alumni.name, query),
-                    roleMatches: getManualMatches(alumni.role, query),
-                    companyMatches: getManualMatches(alumni.company, query),
+
+                    nameMatches: nameMatches,
+                    roleMatches:roleMatches, 
+                    companyMatches:companyMatches, 
                     onTap: () {
                       Navigator.push(
                         context,
@@ -141,16 +158,17 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
               child: TextField(
                 controller: _controller,
                 autofocus: true,
                 decoration: InputDecoration(
                   hintText: 'Search...',
                   prefixIcon: const Icon(Icons.search),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
@@ -158,7 +176,7 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
                   filled: true,
                   fillColor: Theme.of(
                     context,
-                  ).colorScheme.surfaceContainerHighest,
+                  ).colorScheme.secondaryContainer.withAlpha(180),
                 ),
               ),
             ),
@@ -178,24 +196,27 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
       SearchFilter.role: 'Role',
     };
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      child: Wrap(
-        spacing: 8.0,
-        alignment: WrapAlignment.center,
-        children: filterOptions.entries.map((entry) {
-          return FilterChip(
-            label: Text(entry.value),
-            selected: _currentFilter == entry.key,
-            onSelected: (selected) {
-              if (selected) {
-                setState(() {
-                  _currentFilter = entry.key;
-                  _runSearch();
-                });
-              }
-            },
-          );
-        }).toList(),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Wrap(
+          spacing: 8.0,
+          alignment: WrapAlignment.center,
+          children: filterOptions.entries.map((entry) {
+            return FilterChip(
+              label: Text(entry.value),
+              selected: _currentFilter == entry.key,
+              onSelected: (selected) {
+                if (selected) {
+                  setState(() {
+                    _currentFilter = entry.key;
+                    _runSearch();
+                  });
+                }
+              },
+            );
+          }).toList(),
+        ),
       ),
     );
   }

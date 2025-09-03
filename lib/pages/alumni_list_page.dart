@@ -110,7 +110,7 @@ class _AlumniListPageState extends State<AlumniListPage> {
         filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
         child: Container(
           padding: const EdgeInsets.only(top: 8),
-          color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.85),
+          color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(200),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [_buildBranchFilters(), _buildSearchTrigger(context)],
@@ -122,39 +122,41 @@ class _AlumniListPageState extends State<AlumniListPage> {
 
   Widget _buildBranchFilters() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0),
-      child: Wrap(
-        spacing: 6.0,
-        runSpacing: 4.0,
-        alignment: WrapAlignment.center,
-        children:
-            [
-                  'All',
-                  'Computer Science',
-                  'Mechanical Engineering',
-                  'Electrical Engineering',
-                  'Civil Engineering',
-                ]
-                .map(
-                  (branch) => FilterChip(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    labelStyle: Theme.of(context).textTheme.labelSmall,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    label: Text(branch),
-                    selected: _selectedBranch == branch,
-                    onSelected: (selected) {
-                      if (selected) setState(() => _selectedBranch = branch);
-                    },
-                  ),
-                )
-                .toList(),
+      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Wrap(
+          spacing: 6.0,
+          runSpacing: 4.0,
+          alignment: WrapAlignment.start, // Or center, end, etc.
+          children:
+              [
+                    'All',
+                    'Computer Engineering',
+                    'Mechanical Engineering',
+                    'Electrical Engineering',
+                  ]
+                  .map(
+                    (branch) => FilterChip(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      labelStyle: Theme.of(context).textTheme.labelSmall,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      label: Text(branch),
+                      selected: _selectedBranch == branch,
+                      onSelected: (selected) {
+                        if (selected) setState(() => _selectedBranch = branch);
+                      },
+                    ),
+                  )
+                  .toList(),
+        ),
       ),
     );
   }
 
   Widget _buildSearchTrigger(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(
@@ -171,14 +173,17 @@ class _AlumniListPageState extends State<AlumniListPage> {
           );
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            color: Theme.of(
+              context,
+            ).colorScheme.secondaryContainer.withAlpha(60),
             borderRadius: BorderRadius.circular(30),
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.search),
+              // const Icon(Icons.search),
               const SizedBox(width: 16),
               Text(
                 'Search alumni',

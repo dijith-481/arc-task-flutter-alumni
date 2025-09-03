@@ -25,7 +25,7 @@ class NordColors {
 final ThemeData nordLightTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.light,
-  colorScheme: const ColorScheme(
+  colorScheme: ColorScheme(
     brightness: Brightness.light,
     primary: NordColors.frost3,
     onPrimary: NordColors.snowStorm2,
@@ -33,21 +33,33 @@ final ThemeData nordLightTheme = ThemeData(
     onSecondary: NordColors.polarNight0,
     error: NordColors.aurora0,
     onError: NordColors.snowStorm2,
-    surface: NordColors.snowStorm1,
+
+    surface: NordColors.snowStorm2,
     onSurface: NordColors.polarNight0,
-  ),
-  scaffoldBackgroundColor: NordColors.snowStorm2,
-  appBarTheme: const AppBarTheme(
-    elevation: 0, // No shadow
-    backgroundColor: NordColors.snowStorm1,
-    foregroundColor: NordColors.polarNight0,
+
+    surfaceContainer: NordColors.snowStorm1,
+
+    surfaceContainerHighest: NordColors.snowStorm0,
+    onSurfaceVariant: NordColors.polarNight1,
+    outline: NordColors.polarNight3,
+
+    primaryContainer: NordColors.frost2,
+    onPrimaryContainer: NordColors.polarNight0,
+    secondaryContainer: NordColors.frost0,
+    onSecondaryContainer: NordColors.polarNight0,
+    tertiary: NordColors.aurora4,
+    onTertiary: NordColors.polarNight0,
+    tertiaryContainer: NordColors.aurora4,
+    onTertiaryContainer: NordColors.polarNight0,
+    errorContainer: NordColors.aurora0,
+    onErrorContainer: NordColors.snowStorm2,
   ),
 );
 
 final ThemeData nordDarkTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
-  colorScheme: const ColorScheme(
+  colorScheme: ColorScheme(
     brightness: Brightness.dark,
     primary: NordColors.frost2,
     onPrimary: NordColors.polarNight0,
@@ -55,13 +67,21 @@ final ThemeData nordDarkTheme = ThemeData(
     onSecondary: NordColors.polarNight0,
     error: NordColors.aurora0,
     onError: NordColors.polarNight0,
-    surface: NordColors.polarNight1,
+    surface: NordColors.polarNight0,
     onSurface: NordColors.snowStorm1,
-  ),
-  scaffoldBackgroundColor: NordColors.polarNight0,
-  appBarTheme: const AppBarTheme(
-    elevation: 0, // No shadow
-    backgroundColor: NordColors.polarNight1,
-    foregroundColor: NordColors.snowStorm1,
+    surfaceContainer: NordColors.polarNight1,
+    surfaceContainerHighest: NordColors.polarNight2,
+    onSurfaceVariant: NordColors.snowStorm0,
+    outline: NordColors.polarNight3,
+    primaryContainer: NordColors.frost3,
+    onPrimaryContainer: NordColors.snowStorm2,
+    secondaryContainer: NordColors.frost1,
+    onSecondaryContainer: NordColors.polarNight0,
+    tertiary: NordColors.aurora4,
+    onTertiary: NordColors.polarNight0,
+    tertiaryContainer: NordColors.aurora4,
+    onTertiaryContainer: NordColors.polarNight0,
+    errorContainer: NordColors.aurora0,
+    onErrorContainer: NordColors.polarNight0,
   ),
 );

@@ -1,4 +1,3 @@
-// lib/widgets/alumni_card.dart
 import 'dart:ui';
 import 'package:alumni_app/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,7 @@ class AlumniCard extends StatelessWidget {
         style: style,
         highlightStyle: style?.copyWith(
           color: theme.colorScheme.secondary,
-          backgroundColor: theme.colorScheme.secondary.withOpacity(0.2),
+          backgroundColor: theme.colorScheme.primary.withAlpha(70),
         ),
       );
     }
@@ -67,21 +66,11 @@ class AlumniCard extends StatelessWidget {
             ),
             Positioned.fill(
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(color: Colors.transparent),
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.surface.withOpacity(0.85),
-                      theme.colorScheme.surface.withOpacity(0.95),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                child: Container(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.secondaryContainer.withAlpha(220),
                 ),
               ),
             ),
@@ -104,6 +93,7 @@ class AlumniCard extends StatelessWidget {
                           alumni.name,
                           nameMatches,
                           textTheme.titleLarge?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer,
                             fontWeight: FontWeight.w600,
                           ),
                           theme,
@@ -123,7 +113,7 @@ class AlumniCard extends StatelessWidget {
                           alumni.company,
                           companyMatches,
                           textTheme.bodyMedium?.copyWith(
-                            color: textTheme.bodySmall?.color?.withOpacity(0.8),
+                            color: textTheme.bodySmall?.color?.withAlpha(220),
                           ),
                           theme,
                         ),
@@ -134,14 +124,13 @@ class AlumniCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.secondaryContainer
-                                .withOpacity(0.5),
+                            color: theme.colorScheme.secondary.withAlpha(240),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             '${alumni.batch} - ${alumni.branch}',
                             style: textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSecondaryContainer,
+                              color: theme.colorScheme.onPrimary,
                             ),
                           ),
                         ),
