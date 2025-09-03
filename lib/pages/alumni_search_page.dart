@@ -10,15 +10,27 @@ enum SearchFilter { all, name, branch, company, role, batch }
 
 class AlumniSearchPage extends StatefulWidget {
   final List<Alumni> allAlumni;
-  const AlumniSearchPage({super.key, required this.allAlumni});
+
+  final Animation<double> transitionAnimation;
+  const AlumniSearchPage({
+    super.key,
+    required this.allAlumni,
+    required this.transitionAnimation, 
+  });
+
+
+
   @override
   State<AlumniSearchPage> createState() => _AlumniSearchPageState();
 }
 
 class _AlumniSearchPageState extends State<AlumniSearchPage> {
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   List<Result<Alumni>> _filteredResults = [];
   SearchFilter _currentFilter = SearchFilter.all;
+
+
 
   @override
   void initState() {
@@ -30,6 +42,7 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
   void dispose() {
     _controller.removeListener(_runSearch);
     _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -39,7 +52,6 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
       setState(() => _filteredResults = []);
       return;
     }
-
     final keysToSearch = <WeightedKey<Alumni>>[];
     if (_currentFilter == SearchFilter.all) {
       keysToSearch.addAll([
@@ -83,7 +95,6 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     }
     final searcher = Fuzzy<Alumni>(
       widget.allAlumni,
-
       options: FuzzyOptions(keys: keysToSearch, threshold: 0.5),
     );
     setState(() {
@@ -95,9 +106,7 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     final List<int> indices = [];
     final lowerText = text.toLowerCase();
     final lowerQuery = query.toLowerCase();
-
     final queryChars = lowerQuery.replaceAll(' ', '').split('').toSet();
-
     for (int i = 0; i < lowerText.length; i++) {
       if (queryChars.contains(lowerText[i])) {
         indices.add(i);
@@ -108,104 +117,124 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.black12,
-    body: BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-      // --- START OF FIX ---
-      // Replaced Stack with Column to anchor ListView to the bottom.
-      child: Column(
-        children: [
-          const SizedBox(height: kToolbarHeight), // Space for status bar
-
-          // Expanded widget makes the ListView take remaining space,
-          // correctly pushing it above the search bar and filters.
-          Expanded(
-            child: ListView.builder(
-              reverse: true, // Remains true for bottom-up scrolling
-              padding: const EdgeInsets.only(top: 16, bottom: 0), // Added top padding
-              itemCount: _filteredResults.length,
-              itemBuilder: (context, index) {
-                final result = _filteredResults[index];
-                final alumni = result.item;
-                final query = _controller.text;
-
-                List<int> nameMatches = [];
-                List<int> roleMatches = [];
-                List<int> companyMatches = [];
-                List<int> batchMatches = [];
-                List<int> branchMatches = [];
-                if (_currentFilter == SearchFilter.all ||
-                    _currentFilter == SearchFilter.name) {
-                  nameMatches = getManualMatches(alumni.name, query);
-                }
-                if (_currentFilter == SearchFilter.all ||
-                    _currentFilter == SearchFilter.role) {
-                  roleMatches = getManualMatches(alumni.role, query);
-                }
-                if (_currentFilter == SearchFilter.all ||
-                    _currentFilter == SearchFilter.company) {
-                  companyMatches = getManualMatches(alumni.company, query);
-                }
-                if (_currentFilter == SearchFilter.all ||
-                    _currentFilter == SearchFilter.batch) {
-                  batchMatches = getManualMatches(alumni.batch, query);
-                }
-                if (_currentFilter == SearchFilter.all ||
-                    _currentFilter == SearchFilter.branch) {
-                  branchMatches = getManualMatches(alumni.branch, query);
-                }
-
-                return AlumniCard(
-                  alumni: alumni,
-                  nameMatches: nameMatches,
-                  roleMatches: roleMatches,
-                  companyMatches: companyMatches,
-                  batchMatches: batchMatches,
-                  branchMatches: branchMatches,
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => AlumniProfilePage(alumni: alumni),
-                    );
+    return Scaffold(
+      backgroundColor: Theme.of(
+        context,
+      ).colorScheme.surfaceContainerHighest.withAlpha(180),
+      body: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+        child: AnimatedBuilder(
+          animation: widget.transitionAnimation,
+          builder: (context, child) {
+            // widget.transitionAnimation.value goes from 1.0 down to 0.0 on exit.
+            return Opacity(
+              opacity: widget.transitionAnimation.value,
+              child: child, // The original Column content
+            );
+          },
+          child: Column(
+            children: [
+              const SizedBox(height: kToolbarHeight),
+              Expanded(
+                child: NotificationListener<OverscrollNotification>(
+                  onNotification: (notification) {
+                    if (notification.dragDetails != null &&
+                        notification.metrics.pixels >=
+                            notification.metrics.maxScrollExtent) {
+                      Navigator.of(context).pop();
+                      return true;
+                    }
+                    return false;
                   },
-                );
-              },
-            ),
-          ),
-          // The search bar and filter chips are now correctly at the bottom
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
-            child: TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: const Icon(Icons.search),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 20,
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    reverse: true,
+                    padding: const EdgeInsets.only(top: 16, bottom: 0),
+                    itemCount: _filteredResults.length,
+                    itemBuilder: (context, index) {
+                      final result = _filteredResults[index];
+                      final alumni = result.item;
+                      final query = _controller.text;
+                      List<int> nameMatches = [];
+                      List<int> roleMatches = [];
+                      List<int> companyMatches = [];
+                      List<int> batchMatches = [];
+                      List<int> branchMatches = [];
+                      if (_currentFilter == SearchFilter.all ||
+                          _currentFilter == SearchFilter.name) {
+                        nameMatches = getManualMatches(alumni.name, query);
+                      }
+                      if (_currentFilter == SearchFilter.all ||
+                          _currentFilter == SearchFilter.role) {
+                        roleMatches = getManualMatches(alumni.role, query);
+                      }
+                      if (_currentFilter == SearchFilter.all ||
+                          _currentFilter == SearchFilter.company) {
+                        companyMatches = getManualMatches(
+                          alumni.company,
+                          query,
+                        );
+                      }
+                      if (_currentFilter == SearchFilter.all ||
+                          _currentFilter == SearchFilter.batch) {
+                        batchMatches = getManualMatches(alumni.batch, query);
+                      }
+                      if (_currentFilter == SearchFilter.all ||
+                          _currentFilter == SearchFilter.branch) {
+                        branchMatches = getManualMatches(alumni.branch, query);
+                      }
+                      return AlumniCard(
+                        alumni: alumni,
+                        nameMatches: nameMatches,
+                        roleMatches: roleMatches,
+                        companyMatches: companyMatches,
+                        batchMatches: batchMatches,
+                        branchMatches: branchMatches,
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) =>
+                                AlumniProfilePage(alumni: alumni),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Theme.of(
-                  context,
-                ).colorScheme.secondaryContainer.withAlpha(180),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+                child: TextField(
+                  controller: _controller,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: const Icon(Icons.search),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(
+                      context,
+                    ).colorScheme.secondaryContainer.withAlpha(180),
+                  ),
+                ),
+              ),
+              _buildFilterChips(),
+            ],
           ),
-          _buildFilterChips(),
-        ],
+        ),
       ),
-      // --- END OF FIX ---
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildFilterChips() {
     final filterOptions = {

@@ -49,6 +49,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -90,3 +91,26 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: true # Set to true to generate Android icons
+  ios: false # Set to false for now, as you only need Android
+  image_path: "assets/alumni.png" # Path to your source icon image
+
+  # --- OPTIONAL: Android Adaptive Icons (Recommended for Android 8.0+) ---
+  # Adaptive icons provide a foreground and background layer for a more dynamic look.
+  # If you only provide image_path, it will use that for both.
+  # For a better look, you can specify separate layers:
+
+  # Option A: Solid background color
+  adaptive_icon_background: "#81A1C1" # A solid color for the background layer
+
+
+  # Option B: Image for the background layer (e.g., a pattern or solid color image)
+  # adaptive_icon_background: "assets/images/adaptive_bg.png"
+
+  # A separate foreground image (e.g., your logo only, on a transparent background)
+  # adaptive_icon_foreground: "assets/images/adaptive_fg.png"
+
+  # If you don't specify adaptive_icon_background or adaptive_icon_foreground,
+  # the tool will generate a simple adaptive icon using your `image_path` as the foreground
+  # and a solid white background (or transparent if your image has transparency).

@@ -42,12 +42,8 @@ class _AlumniListPageState extends State<AlumniListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        // --- START OF FIX ---
-        // We replace the Stack with a Column to control the layout vertically.
         child: Column(
           children: [
-            // This Expanded widget tells the FutureBuilder (and its ListView)
-            // to take up all the available vertical space ABOVE the search bar.
             Expanded(
               child: FutureBuilder<List<Alumni>>(
                 future: _alumniFuture,
@@ -66,10 +62,8 @@ class _AlumniListPageState extends State<AlumniListPage> {
 
                   final list = _filteredBranchAlumni;
                   return ListView.builder(
-                    // reverse: true now works as expected within this defined space.
                     reverse: true,
-                    // We add top padding to prevent the last item from being hidden
-                    // by the status bar when scrolling to the very end.
+
                     padding: const EdgeInsets.only(top: 16),
                     itemCount: list.length,
                     itemBuilder: (context, index) {
@@ -102,12 +96,10 @@ class _AlumniListPageState extends State<AlumniListPage> {
                 },
               ),
             ),
-            // The search bar is now the second item in the Column,
-            // neatly placed at the bottom.
+
             _buildBottomSearchAndFilter(context),
           ],
         ),
-        // --- END OF FIX ---
       ),
     );
   }
@@ -136,7 +128,7 @@ class _AlumniListPageState extends State<AlumniListPage> {
         child: Wrap(
           spacing: 6.0,
           runSpacing: 4.0,
-          alignment: WrapAlignment.start, // Or center, end, etc.
+          alignment: WrapAlignment.start,
           children:
               [
                     'All',
@@ -171,12 +163,16 @@ class _AlumniListPageState extends State<AlumniListPage> {
             PageRouteBuilder(
               opaque: false,
               pageBuilder: (context, animation, secondaryAnimation) =>
-                  AlumniSearchPage(allAlumni: _allAlumni),
+                  AlumniSearchPage(
+                    allAlumni: _allAlumni,
+                    transitionAnimation: animation,
+                  ),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                     return FadeTransition(opacity: animation, child: child);
                   },
               transitionDuration: const Duration(milliseconds: 300),
+              reverseTransitionDuration: const Duration(milliseconds: 300),
             ),
           );
         },
@@ -191,7 +187,6 @@ class _AlumniListPageState extends State<AlumniListPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // const Icon(Icons.search),
               const SizedBox(width: 16),
               Text(
                 'Search alumni',

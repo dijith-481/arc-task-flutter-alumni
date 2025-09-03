@@ -56,26 +56,13 @@ class AlumniCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
+        color: theme.colorScheme.secondaryContainer.withAlpha(200),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         elevation: 0,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Stack(
           children: [
-            Positioned.fill(
-              child: Image.network(
-                alumni.imageUrl ?? 'https://i.pravatar.cc/300',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-                child: Container(
-                  color: theme.colorScheme.secondaryContainer.withAlpha(220),
-                ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
