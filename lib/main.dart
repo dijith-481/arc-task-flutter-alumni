@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'theme/nord_theme.dart';
 import 'pages/alumni_list_page.dart';
 
@@ -7,6 +8,8 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const AlumniApp());
@@ -17,13 +20,36 @@ class AlumniApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Alumni List',
+    return Builder(
+      builder: (context) {
+        final isDarkMode =
+            MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-      theme: nordLightTheme,
-      darkTheme: nordDarkTheme,
-      themeMode: ThemeMode.system,
-      home: const AlumniListPage(),
+        final systemUiOverlayStyle = SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+
+          systemNavigationBarColor: Colors.transparent,
+
+          statusBarIconBrightness: isDarkMode
+              ? Brightness.light
+              : Brightness.dark,
+
+          systemNavigationBarIconBrightness: isDarkMode
+              ? Brightness.light
+              : Brightness.dark,
+        );
+
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: systemUiOverlayStyle,
+          child: MaterialApp(
+            title: 'Alumni List',
+            theme: nordLightTheme,
+            darkTheme: nordDarkTheme,
+            themeMode: ThemeMode.system,
+            home: const AlumniListPage(),
+          ),
+        );
+      },
     );
   }
 }
