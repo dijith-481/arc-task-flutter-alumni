@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/data/result.dart';
 import 'package:fuzzy/fuzzy.dart';
@@ -16,7 +17,6 @@ class AlumniSearchPage extends StatefulWidget {
 
 class _AlumniSearchPageState extends State<AlumniSearchPage> {
   final TextEditingController _controller = TextEditingController();
-
   List<Result<Alumni>> _filteredResults = [];
   SearchFilter _currentFilter = SearchFilter.all;
 
@@ -44,6 +44,7 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     if (_currentFilter == SearchFilter.all) {
       keysToSearch.addAll([
         WeightedKey<Alumni>(name: 'name', weight: 0.5, getter: (a) => a.name),
+        WeightedKey<Alumni>(name: 'role', weight: 0.2, getter: (a) => a.role),
         WeightedKey<Alumni>(
           name: 'company',
           weight: 0.2,
@@ -51,10 +52,9 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
         ),
         WeightedKey<Alumni>(
           name: 'branch',
-          weight: 0.2,
+          weight: 0.1,
           getter: (a) => a.branch,
         ),
-        WeightedKey<Alumni>(name: 'role', weight: 0.1, getter: (a) => a.role),
       ]);
     } else {
       keysToSearch.add(
@@ -80,6 +80,7 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     }
     final searcher = Fuzzy<Alumni>(
       widget.allAlumni,
+      
       options: FuzzyOptions(keys: keysToSearch, threshold: 0.5),
     );
     setState(() {
@@ -87,56 +88,83 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
     });
   }
 
+  
+  List<int> getManualMatches(String text, String query) {
+    final List<int> indices = [];
+    final lowerText = text.toLowerCase();
+    final lowerQuery = query.toLowerCase();
+
+    
+    final queryChars = lowerQuery.replaceAll(' ', '').split('').toSet();
+
+    for (int i = 0; i < lowerText.length; i++) {
+      if (queryChars.contains(lowerText[i])) {
+        indices.add(i);
+      }
+    }
+    return indices;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              itemCount: _filteredResults.length,
-              itemBuilder: (context, index) {
-                final result = _filteredResults[index];
+      backgroundColor: Colors.black12,
+      body: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+        child: Column(
+          children: [
+            const SizedBox(height: kToolbarHeight),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredResults.length,
+                itemBuilder: (context, index) {
+                  final result = _filteredResults[index];
+                  final alumni = result.item;
+                  final query = _controller.text;
 
-                return AlumniCard(
-                  alumni: result.item,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (c) => AlumniProfilePage(alumni: result.item),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Theme.of(
-                  context,
-                ).colorScheme.surfaceContainerHighest,
+                  return AlumniCard(
+                    alumni: alumni,
+                    
+                    nameMatches: getManualMatches(alumni.name, query),
+                    roleMatches: getManualMatches(alumni.role, query),
+                    companyMatches: getManualMatches(alumni.company, query),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) => AlumniProfilePage(alumni: alumni),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
-          ),
-          _buildFilterChips(),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: TextField(
+                controller: _controller,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
+                ),
+              ),
+            ),
+            _buildFilterChips(),
+          ],
+        ),
       ),
     );
   }

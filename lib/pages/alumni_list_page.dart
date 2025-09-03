@@ -60,13 +60,11 @@ class _AlumniListPageState extends State<AlumniListPage> {
                 }
 
                 final list = _filteredBranchAlumni;
-
                 return ListView.builder(
                   padding: const EdgeInsets.only(bottom: 150),
                   itemCount: list.length,
                   itemBuilder: (context, index) {
                     final alumni = list[index];
-
                     return TweenAnimationBuilder<double>(
                       tween: Tween(begin: 0.0, end: 1.0),
                       duration: const Duration(milliseconds: 400),
@@ -80,27 +78,12 @@ class _AlumniListPageState extends State<AlumniListPage> {
                       child: AlumniCard(
                         alumni: alumni,
                         onTap: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              transitionDuration: const Duration(
-                                milliseconds: 500,
-                              ),
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      AlumniProfilePage(alumni: alumni),
-                              transitionsBuilder:
-                                  (
-                                    context,
-                                    animation,
-                                    secondaryAnimation,
-                                    child,
-                                  ) {
-                                    return FadeTransition(
-                                      opacity: animation,
-                                      child: child,
-                                    );
-                                  },
-                            ),
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) =>
+                                AlumniProfilePage(alumni: alumni),
                           );
                         },
                       ),
@@ -109,7 +92,6 @@ class _AlumniListPageState extends State<AlumniListPage> {
                 );
               },
             ),
-
             Positioned(
               bottom: 0,
               left: 0,
@@ -140,9 +122,10 @@ class _AlumniListPageState extends State<AlumniListPage> {
 
   Widget _buildBranchFilters() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0),
       child: Wrap(
-        spacing: 8.0,
+        spacing: 6.0,
+        runSpacing: 4.0,
         alignment: WrapAlignment.center,
         children:
             [
@@ -155,7 +138,8 @@ class _AlumniListPageState extends State<AlumniListPage> {
                 .map(
                   (branch) => FilterChip(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                    labelStyle: Theme.of(context).textTheme.labelMedium,
+                    labelStyle: Theme.of(context).textTheme.labelSmall,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     label: Text(branch),
                     selected: _selectedBranch == branch,
                     onSelected: (selected) {
@@ -175,13 +159,14 @@ class _AlumniListPageState extends State<AlumniListPage> {
         onTap: () {
           Navigator.of(context).push(
             PageRouteBuilder(
+              opaque: false,
               pageBuilder: (context, animation, secondaryAnimation) =>
                   AlumniSearchPage(allAlumni: _allAlumni),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                     return FadeTransition(opacity: animation, child: child);
                   },
-              transitionDuration: const Duration(milliseconds: 200),
+              transitionDuration: const Duration(milliseconds: 300),
             ),
           );
         },
