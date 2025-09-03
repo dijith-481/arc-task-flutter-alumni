@@ -1,0 +1,208 @@
+import 'dart:ui';
+import 'package:alumni_app/pages/alumni_search_page.dart';
+import 'package:flutter/material.dart';
+import '../services/firestore_service.dart';
+import '../models/alumni.dart';
+import '../widgets/alumni_card.dart';
+import './alumni_profile_page.dart';
+
+class AlumniListPage extends StatefulWidget {
+  const AlumniListPage({super.key});
+  @override
+  State<AlumniListPage> createState() => _AlumniListPageState();
+}
+
+class _AlumniListPageState extends State<AlumniListPage> {
+  final FirestoreService _firestoreService = FirestoreService();
+  late Future<List<Alumni>> _alumniFuture;
+  List<Alumni> _allAlumni = [];
+  String _selectedBranch = 'All';
+
+  @override
+  void initState() {
+    super.initState();
+    _alumniFuture = _firestoreService.getAlumni().then((alumni) {
+      if (mounted) {
+        setState(() {
+          _allAlumni = alumni;
+        });
+      }
+      return alumni;
+    });
+  }
+
+  List<Alumni> get _filteredBranchAlumni {
+    if (_selectedBranch == 'All') return _allAlumni;
+    return _allAlumni
+        .where((alumni) => alumni.branch == _selectedBranch)
+        .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            FutureBuilder<List<Alumni>>(
+              future: _alumniFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('An error occurred: ${snapshot.error}'),
+                  );
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No alumni found.'));
+                }
+
+                final list = _filteredBranchAlumni;
+
+                return ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 150),
+                  itemCount: list.length,
+                  itemBuilder: (context, index) {
+                    final alumni = list[index];
+
+                    return TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeOut,
+                      builder: (context, value, child) {
+                        return Transform.translate(
+                          offset: Offset(0, 40 * (1 - value)),
+                          child: Opacity(opacity: value, child: child!),
+                        );
+                      },
+                      child: AlumniCard(
+                        alumni: alumni,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              transitionDuration: const Duration(
+                                milliseconds: 500,
+                              ),
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      AlumniProfilePage(alumni: alumni),
+                              transitionsBuilder:
+                                  (
+                                    context,
+                                    animation,
+                                    secondaryAnimation,
+                                    child,
+                                  ) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    );
+                                  },
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _buildBottomSearchAndFilter(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomSearchAndFilter(BuildContext context) {
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+        child: Container(
+          padding: const EdgeInsets.only(top: 8),
+          color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.85),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [_buildBranchFilters(), _buildSearchTrigger(context)],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBranchFilters() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 8.0),
+      child: Wrap(
+        spacing: 8.0,
+        alignment: WrapAlignment.center,
+        children:
+            [
+                  'All',
+                  'Computer Science',
+                  'Mechanical Engineering',
+                  'Electrical Engineering',
+                  'Civil Engineering',
+                ]
+                .map(
+                  (branch) => FilterChip(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    labelStyle: Theme.of(context).textTheme.labelMedium,
+                    label: Text(branch),
+                    selected: _selectedBranch == branch,
+                    onSelected: (selected) {
+                      if (selected) setState(() => _selectedBranch = branch);
+                    },
+                  ),
+                )
+                .toList(),
+      ),
+    );
+  }
+
+  Widget _buildSearchTrigger(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  AlumniSearchPage(allAlumni: _allAlumni),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+              transitionDuration: const Duration(milliseconds: 200),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.search),
+              const SizedBox(width: 16),
+              Text(
+                'Search alumni',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
