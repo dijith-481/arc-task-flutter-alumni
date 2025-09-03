@@ -9,6 +9,8 @@ class AlumniCard extends StatelessWidget {
   final List<int>? nameMatches;
   final List<int>? roleMatches;
   final List<int>? companyMatches;
+  final List<int>? batchMatches;
+  final List<int>? branchMatches;
 
   const AlumniCard({
     super.key,
@@ -17,6 +19,8 @@ class AlumniCard extends StatelessWidget {
     this.nameMatches,
     this.roleMatches,
     this.companyMatches,
+    this.batchMatches,
+    this.branchMatches,
   });
 
   Widget _buildHighlightableText(
@@ -68,9 +72,7 @@ class AlumniCard extends StatelessWidget {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
                 child: Container(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.secondaryContainer.withAlpha(220),
+                  color: theme.colorScheme.secondaryContainer.withAlpha(220),
                 ),
               ),
             ),
@@ -124,14 +126,41 @@ class AlumniCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.secondary.withAlpha(240),
+                            color: Colors.transparent,
                             borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            '${alumni.batch} - ${alumni.branch}',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onPrimary,
+                            border: Border.all(
+                              color: theme.colorScheme.secondary,
+                              width: 1,
                             ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _buildHighlightableText(
+                                alumni.batch,
+                                batchMatches,
+                                textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSecondaryContainer,
+                                ),
+                                theme,
+                              ),
+                              _buildHighlightableText(
+                                ' - ',
+                                [],
+                                textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSecondaryContainer,
+                                ),
+                                theme,
+                              ),
+                              _buildHighlightableText(
+                                alumni.branch,
+                                branchMatches,
+                                textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSecondaryContainer,
+                                ),
+                                theme,
+                              ),
+                            ],
                           ),
                         ),
                       ],

@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:alumni_app/theme/nord_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/alumni.dart';
@@ -33,219 +32,147 @@ class _AlumniProfilePageState extends State<AlumniProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: FutureBuilder<AlumniDetails>(
-        future: _detailsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildProfileContent(context, null, isLoading: true);
-          }
-
-          if (snapshot.hasError || !snapshot.hasData) {
-            return _buildProfileContent(context, null, hasError: true);
-          }
-
-          return _buildProfileContent(context, snapshot.data!);
-        },
-      ),
-    );
-  }
-
-  Widget _buildProfileContent(
-    BuildContext context,
-    AlumniDetails? details, {
-    bool isLoading = false,
-    bool hasError = false,
-  }) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
 
-    return Container(
-      width: size.width,
-      height: size.height,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image:
-              NetworkImage(widget.alumni.imageUrl ?? 'https://i.pravatar.cc/800'),
-          fit: BoxFit.cover,
-          
-          colorFilter: ColorFilter.mode(
-            NordColors.frost2.withOpacity(0.3),
-            BlendMode.srcATop,
-          ),
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.0, 0.4, 1.0],
-            colors: [
-              Colors.transparent,
-              theme.scaffoldBackgroundColor.withOpacity(0.1),
-              theme.scaffoldBackgroundColor,
-            ],
-          ),
-        ),
-        child: DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.5,
-          maxChildSize: 0.9,
-          builder: (context, scrollController) {
-            
-            return ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
+    return Scaffold(
+      backgroundColor: theme.colorScheme.secondaryContainer,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: size.height * 0.4,
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    color: theme.scaffoldBackgroundColor.withOpacity(0.85),
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: theme.dividerColor,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                            const SizedBox(height: 40),
-                            Row(
-                              children: [
-                                Container(
-                                  width: 80,
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color:
-                                          theme.dividerColor.withOpacity(0.3),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: ClipOval(
-                                    child: Image.network(
-                                      widget.alumni.imageUrl ??
-                                          'https://i.pravatar.cc/150',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        widget.alumni.name,
-                                        style: theme.textTheme.headlineSmall
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      
-                                      Text(
-                                        '${widget.alumni.role} at ${widget.alumni.company}',
-                                        style: theme.textTheme.bodyLarge
-                                            ?.copyWith(
-                                          color: theme.colorScheme.onSurface
-                                              .withOpacity(0.9),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        '${widget.alumni.batch} - ${widget.alumni.branch}',
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                          color: theme.colorScheme.onSurface
-                                              .withOpacity(0.7),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 32),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                controller: scrollController,
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    if (isLoading)
-                                      const Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(40.0),
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      ),
-                                    if (hasError)
-                                      const Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(40.0),
-                                          child:
-                                              Text("Couldn't load details."),
-                                        ),
-                                      ),
-                                    if (details != null) ...[
-                                      Text(
-                                        "About",
-                                        style: theme.textTheme.titleLarge
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        details.description,
-                                        style: theme.textTheme.bodyLarge
-                                            ?.copyWith(
-                                          height: 1.5,
-                                          color: theme.colorScheme.onSurface
-                                              .withOpacity(0.8),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 32),
-                                      
-                                      _buildActionButtons(context, details),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        widget.alumni.imageUrl ?? 'https://i.pravatar.cc/800',
                       ),
-                    ],
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
+
+                Container(
+                  height: size.height * 0.4,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        theme.colorScheme.secondaryContainer.withAlpha(160),
+                        theme.colorScheme.secondaryContainer,
+                      ],
+                      stops: const [0.05, 0.5, 0.95],
+                    ),
+                  ),
+                ),
+
+                SizedBox(
+                  height: size.height * 0.5,
+                  width: double.infinity,
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.alumni.name,
+                            style: theme.textTheme.displaySmall?.copyWith(
+                              color: theme.colorScheme.onSecondaryContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${widget.alumni.role} at ${widget.alumni.company}',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: theme.colorScheme.secondary,
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              '${widget.alumni.batch} - ${widget.alumni.branch}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSecondaryContainer,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: FutureBuilder<AlumniDetails>(
+                future: _detailsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return const Center(child: Text("Couldn't load details."));
+                  }
+                  final details = snapshot.data!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "About",
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: theme.colorScheme.onSecondaryContainer,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        details.description,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSecondaryContainer
+                              .withAlpha(220),
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      _buildActionButtons(context, details),
+                    ],
+                  );
+                },
               ),
-            );
-          },
+            ),
+            const SizedBox(height: 40),
+          ],
         ),
       ),
     );
   }
 
-  
   Widget _buildActionButtons(BuildContext context, AlumniDetails details) {
     final theme = Theme.of(context);
     final linkedinUrl = details.socials['linkedin'];
@@ -261,8 +188,10 @@ class _AlumniProfilePageState extends State<AlumniProfilePage> {
                 icon: const Icon(Icons.email_outlined),
                 label: const Text('Email'),
                 onPressed: () async {
-                  final Uri emailLaunchUri =
-                      Uri(scheme: 'mailto', path: details.email);
+                  final Uri emailLaunchUri = Uri(
+                    scheme: 'mailto',
+                    path: details.email,
+                  );
                   if (await canLaunchUrl(emailLaunchUri)) {
                     await launchUrl(emailLaunchUri);
                   }
@@ -277,7 +206,9 @@ class _AlumniProfilePageState extends State<AlumniProfilePage> {
             ),
             if (linkedinUrl != null) ...[
               const SizedBox(width: 12),
-              OutlinedButton(
+              OutlinedButton.icon(
+                icon: const Icon(Icons.work_outline, size: 18),
+                label: const Text('LinkedIn'),
                 onPressed: () async {
                   final Uri url = Uri.parse(linkedinUrl);
                   if (await canLaunchUrl(url)) {
@@ -285,45 +216,54 @@ class _AlumniProfilePageState extends State<AlumniProfilePage> {
                   }
                 },
                 style: OutlinedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                 ),
-                child: const Icon(Icons.work_outline),
               ),
             ],
           ],
         ),
         if (otherSocials.isNotEmpty) ...[
           const SizedBox(height: 24),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: otherSocials.entries.map((social) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: theme.dividerColor.withOpacity(0.3),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: otherSocials.entries.map((social) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: theme.colorScheme.onSecondary),
                   ),
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    _getSocialIcon(social.key),
-                    size: 20,
-                    color: theme.colorScheme.onSurface,
+                  child: IconButton(
+                    icon: Icon(
+                      _getSocialIcon(social.key),
+                      size: 20,
+                      color: theme.colorScheme.onSecondary,
+                    ),
+                    onPressed: () async {
+                      final Uri url = Uri.parse(social.value);
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      }
+                    },
                   ),
-                  onPressed: () async {
-                    final Uri url = Uri.parse(social.value);
-                    if (await canLaunchUrl(url)) {
-                      await launchUrl(url, mode: LaunchMode.externalApplication);
-                    }
-                  },
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
         ],
       ],

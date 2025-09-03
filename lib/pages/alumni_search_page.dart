@@ -126,6 +126,8 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
                   List<int> nameMatches = [];
                   List<int> roleMatches = [];
                   List<int> companyMatches = [];
+                  List<int> batchMatches = [];
+                  List<int> branchMatches = [];
                   if (_currentFilter == SearchFilter.all ||
                       _currentFilter == SearchFilter.name) {
                     nameMatches = getManualMatches(alumni.name, query);
@@ -138,19 +140,29 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
                       _currentFilter == SearchFilter.company) {
                     companyMatches = getManualMatches(alumni.company, query);
                   }
+                  if (_currentFilter == SearchFilter.all ||
+                      _currentFilter == SearchFilter.batch) {
+                    batchMatches = getManualMatches(alumni.batch, query);
+                  }
+                  if (_currentFilter == SearchFilter.all ||
+                      _currentFilter == SearchFilter.branch) {
+                    branchMatches = getManualMatches(alumni.branch, query);
+                  }
 
                   return AlumniCard(
                     alumni: alumni,
 
                     nameMatches: nameMatches,
-                    roleMatches:roleMatches, 
-                    companyMatches:companyMatches, 
+                    roleMatches: roleMatches,
+                    companyMatches: companyMatches,
+                    batchMatches: batchMatches,
+                    branchMatches: branchMatches,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (c) => AlumniProfilePage(alumni: alumni),
-                        ),
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => AlumniProfilePage(alumni: alumni),
                       );
                     },
                   );
@@ -194,6 +206,7 @@ class _AlumniSearchPageState extends State<AlumniSearchPage> {
       SearchFilter.branch: 'Branch',
       SearchFilter.company: 'Company',
       SearchFilter.role: 'Role',
+      SearchFilter.batch: 'Batch',
     };
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
