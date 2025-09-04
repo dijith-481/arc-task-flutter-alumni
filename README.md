@@ -139,10 +139,9 @@ The APK will be located at `build/app/outputs/flutter-apk/app-release.apk`.
 >
 > Profile pictures used throughout the application are fetched from [Pravatar](https://pravatar.cc/).
 
-## Credit
-
-*   **Google Gemini:** Contributed approximately 60% of the codebase, created appicon via nanobanana.
-*   **Nord Theme:** Aesthetic inspiration and color palette provided by [Nord (Arctic Ice Studio)](https://www.nordtheme.com/).
+## AI Usage
+**Google Gemini** Assisted in approximately 60% of the codebase,mostly related to code structure and class design. also created the app icon via nanobanana.
+All AI assisted code is manually verified.
 
 ## License
 
