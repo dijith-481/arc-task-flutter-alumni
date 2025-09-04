@@ -103,7 +103,8 @@ flutter_launcher_icons:
 
   # Option A: Solid background color
   adaptive_icon_background: "#81A1C1" # A solid color for the background layer
-
+  adaptive_icon_foreground: "assets/alumni.png"
+  adaptive_icon_monochrome: "assets/monochrome.png"
 
   # Option B: Image for the background layer (e.g., a pattern or solid color image)
   # adaptive_icon_background: "assets/images/adaptive_bg.png"
