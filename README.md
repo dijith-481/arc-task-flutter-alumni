@@ -52,7 +52,7 @@ The application integrates with Firebase Firestore for data management and retri
 
 ## Images
 
-### Light Mode & App Features
+### Light Mode
 <div align="center">
   
 | Home Screen | Profile Page | Search Page | App Icon |
@@ -62,16 +62,18 @@ The application integrates with Firebase Firestore for data management and retri
 
 </div>
 
-### Dark Mode & Activity Features
+### Dark Mode
 <div align="center">
 
-| Home Screen | Profile Page | Recent Activity | Search Page |
+| Home Screen | Profile Page | Search Page| Recents Screen |
 |-------------|--------------|-----------------|-------------|
 | <img src="https://github.com/user-attachments/assets/542f75dd-a392-45f1-b49f-510873aa5331" width="180" alt="Dark Mode Home Screen"> | <img src="https://github.com/user-attachments/assets/ca992b74-a0f1-4606-996a-521ade55ea42" width="180" alt="Dark Mode Profile Page"> | <img src="https://github.com/user-attachments/assets/ede57ab5-d211-4e70-bd2a-47ee334e512c" width="180" alt="Recent Activity"> | <img src="https://github.com/user-attachments/assets/d907fdca-4d49-409a-8637-decf2f4d25df" width="180" alt="Dark Mode Search Page"> |
 | dark theme filter for EEE | dark theme profile page | search in dark theme | app recents screen with material 3 app icon |
 
 </div>
-
+## Installation
+Apk file is provided in the releases tab check the latest one.
+ - sha1 hash is also provided to verify.
 
 
 ## Code Structure and Organization
