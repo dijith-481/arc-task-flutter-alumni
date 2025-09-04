@@ -143,6 +143,11 @@ The APK will be located at `build/app/outputs/flutter-apk/app-release.apk`.
 **Google Gemini** Assisted in approximately 60% of the codebase,mostly related to code structure and class design. also created the app icon via nanobanana.
 All AI assisted code is manually verified.
 
+## Dev
+- **Editor:** **NEOVIM v0.11.4**[dots](https://github.com/dijith-481/nvim)
+- **LSP:** dartls with fluttertools.nvim
+- **Auto-Completion:** Supermaven
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software, provided the original copyright and license notice are included.
