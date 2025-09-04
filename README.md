@@ -58,7 +58,7 @@ The application integrates with Firebase Firestore for data management and retri
 | Home Screen | Profile Page | Search Page | App Icon |
 |-------------|--------------|-------------|----------|
 | <img src="https://github.com/user-attachments/assets/e584c09e-9e90-4f80-934f-08bfdf0bea66" width="180" alt="Light Mode Home Screen"> | <img src="https://github.com/user-attachments/assets/5f0413e9-85da-4e48-8902-254f29a5eeac" width="180" alt="Light Mode Profile Page"> | <img src="https://github.com/user-attachments/assets/0be78dde-43b5-4a4b-91ad-2968fc5dd8ce" width="180" alt="Light Mode Search Page"> | <img src="https://github.com/user-attachments/assets/34c0358d-2a25-4a37-89bf-246463d5cd30" width="180" alt="App Icon"> |
-| alumni page with lightmode | Detailed alumni profiles with company information and graduation details | Advanced filtering and search capabilities for finding specific alumni | Modern Material 3 adaptive icon with dynamic theming support |
+| alumni page with lightmode | Detailed profile page | fuzzy search with filtering | Material 3 themed icons |
 
 </div>
 
@@ -68,7 +68,7 @@ The application integrates with Firebase Firestore for data management and retri
 | Home Screen | Profile Page | Recent Activity | Search Page |
 |-------------|--------------|-----------------|-------------|
 | <img src="https://github.com/user-attachments/assets/542f75dd-a392-45f1-b49f-510873aa5331" width="180" alt="Dark Mode Home Screen"> | <img src="https://github.com/user-attachments/assets/ca992b74-a0f1-4606-996a-521ade55ea42" width="180" alt="Dark Mode Profile Page"> | <img src="https://github.com/user-attachments/assets/ede57ab5-d211-4e70-bd2a-47ee334e512c" width="180" alt="Recent Activity"> | <img src="https://github.com/user-attachments/assets/d907fdca-4d49-409a-8637-decf2f4d25df" width="180" alt="Dark Mode Search Page"> |
-| Elegant dark theme with improved readability and battery efficiency | Consistent dark theme styling across all profile elements and sections | Stay updated with latest alumni activities, networking events, and announcements | Enhanced search experience with dark mode optimization and intuitive filters |
+| dark theme filter for EEE | dark theme profile page | search in dark theme | app recents screen with material 3 app icon |
 
 </div>
 
